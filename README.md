@@ -1,6 +1,6 @@
 # library-prisma
 
-##Task
+## Task
 Please create a library application.
 This application should provide a REST API that satisfies the following requirements.
 
@@ -12,7 +12,7 @@ e) returns all available (not borrowed) books
 
 as input you will get three csv files containing all users, books and who borrowed what and when
 
-##Used Tools
+## Used Tools
 1) Maven
 2) Springboot
 3) InteliJ
