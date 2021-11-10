@@ -31,3 +31,6 @@ http://localhost:8000/swagger-ui.html
 2) I have used openCSV library to load and filter unwanted data from the csv files
 3) Exposed API's to query inserted data
 4) Also added Health check API 
+
+## NOTE
+All dates in API's must be in "YYYY-MM-DD" format
