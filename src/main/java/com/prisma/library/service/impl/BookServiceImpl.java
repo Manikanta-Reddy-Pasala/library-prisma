@@ -30,7 +30,14 @@ class BookServiceImpl implements BookService {
         // Gets the current date
         LocalDate date = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return bookRepository.getAllAvailableBooks(date.format(formatter));
+
+        List<Book> books = bookRepository.getAllAvailableBooks(date.format(formatter));
+
+        List<Book> notBorrowedOnce = bookRepository.getAllBooksNotBorrowedOnce();
+
+        books.addAll(notBorrowedOnce);
+
+        return books;
     }
 
 }

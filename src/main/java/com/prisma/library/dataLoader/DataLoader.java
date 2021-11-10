@@ -34,9 +34,9 @@ import static java.lang.String.format;
 @Slf4j
 public class DataLoader implements ApplicationRunner {
 
-    private BookRepository bookRepository;
-    private UserRepository userRepository;
-    private BorrowRepository borrowRepository;
+    private final BookRepository bookRepository;
+    private final UserRepository userRepository;
+    private final BorrowRepository borrowRepository;
 
     @Value("classpath:books.csv")
     private Resource bookResource;
@@ -54,7 +54,7 @@ public class DataLoader implements ApplicationRunner {
     }
 
     /*
-    Load all 3 CSV files which are under resources folder into respective tables
+    Load all 3 CSV files which are under resources' folder into respective tables
      */
     public void run(ApplicationArguments args) {
         loadBookTable();
@@ -62,7 +62,7 @@ public class DataLoader implements ApplicationRunner {
         loadBorrowTable();
     }
 
-    private void loadUserTable() {
+    public void loadUserTable() {
 
         try (Reader reader = new BufferedReader(new InputStreamReader(userResource.getInputStream()))) {
 
@@ -85,17 +85,15 @@ public class DataLoader implements ApplicationRunner {
 
             users.stream().forEach(record -> {
                 Optional<User> dbRecord = convertUserCSVRecordToUserDBRecord(record);
-                if (dbRecord.isPresent()) {
-                    userRepository.save(dbRecord.get());
-                }
+                dbRecord.ifPresent(userRepository::save);
 
             });
         } catch (Exception ex) {
-            log.error(format("Loading User csv file failed with error:", ex));
+            log.error(format("Loading User csv file failed with error:" + ex));
         }
     }
 
-    private void loadBookTable() {
+    public void loadBookTable() {
 
         try (Reader reader = new BufferedReader(new InputStreamReader(bookResource.getInputStream()))) {
 
@@ -120,11 +118,11 @@ public class DataLoader implements ApplicationRunner {
             });
 
         } catch (Exception ex) {
-            log.error(format("Loading Books csv file failed with error:", ex));
+            log.error(format("Loading Books csv file failed with error:" + ex));
         }
     }
 
-    private void loadBorrowTable() {
+    public void loadBorrowTable() {
         try (Reader reader = new BufferedReader(new InputStreamReader(borrowResource.getInputStream()))) {
 
             CsvToBean<BorrowedModel> csvToBean = new CsvToBeanBuilder(reader)
@@ -145,16 +143,14 @@ public class DataLoader implements ApplicationRunner {
             List<BorrowedModel> borrowedList = csvToBean.parse();
             borrowedList.forEach(record -> {
                 Optional<Borrow> dbRecord = convertBorrowCSVRecordToBorrowDBRecord(record);
-                if (dbRecord.isPresent()) {
-                    borrowRepository.save(dbRecord.get());
-                }
+                dbRecord.ifPresent(borrowRepository::save);
             });
         } catch (Exception ex) {
-            log.error(format("Loading Borrow csv file failed with error:", ex));
+            log.error(format("Loading Borrow csv file failed with error:" + ex));
         }
     }
 
-    private Optional<User> convertUserCSVRecordToUserDBRecord(UserModel record) {
+    public Optional<User> convertUserCSVRecordToUserDBRecord(UserModel record) {
 
         Date memberSince = convertStringToDate(record.getMemberSince());
         Date memberTill = convertStringToDate(record.getMemberTill());
@@ -173,17 +169,19 @@ public class DataLoader implements ApplicationRunner {
         return Optional.ofNullable(user);
     }
 
-    private Date convertStringToDate(String dateString) {
+    public Date convertStringToDate(String dateString) {
         Date date = null;
-        try {
-            date = new SimpleDateFormat("MM/dd/yyyy").parse(dateString);
-        } catch (ParseException e) {
-            log.trace(format("Exception occurred while parsing string to date for the String:", dateString));
+        if (dateString != null) {
+            try {
+                date = new SimpleDateFormat("MM/dd/yyyy").parse(dateString);
+            } catch (ParseException e) {
+                log.trace(format("Exception occurred while parsing string to date for the String:" + dateString));
+            }
         }
         return date;
     }
 
-    private Optional<Borrow> convertBorrowCSVRecordToBorrowDBRecord(BorrowedModel record) {
+    public Optional<Borrow> convertBorrowCSVRecordToBorrowDBRecord(BorrowedModel record) {
 
         Date borrowedTo = convertStringToDate(record.getBorrowedTo());
         Date borrowedFrom = convertStringToDate(record.getBorrowedFrom());

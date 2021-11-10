@@ -19,8 +19,13 @@ public interface BookRepository extends JpaRepository<Book, String> {
             //filter with today's date to find out whether book is available or not
              " where bij.MaxDate <= :date) j" +
             //finally, join on title of the book
-            " on b.title =  j.book_title", nativeQuery = true)
+            " on b.title =  j.book_title ",
+            nativeQuery = true)
     List<Book> getAllAvailableBooks(String date);
+
+    @Query(value = "SELECT * FROM book b WHERE b.title NOT IN (SELECT DISTINCT book_title FROM Borrow)",
+    nativeQuery = true)
+    List<Book> getAllBooksNotBorrowedOnce();
 
     @Query(value = "SELECT * FROM book b " +
             "INNER JOIN " +
@@ -29,4 +34,5 @@ public interface BookRepository extends JpaRepository<Book, String> {
             " on b.title =  j.book_title",
             nativeQuery = true)
     List<Book> getAllBooksBorrowedByUserInGivenDateRange(String user, String fromDate, String toDate);
+
 }
