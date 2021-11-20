@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class BorrowedModel {
+public class BorrowedRecord {
     @CsvBindByName(column = "Borrower")
     private String borrower;
     @CsvBindByName(column = "Book")

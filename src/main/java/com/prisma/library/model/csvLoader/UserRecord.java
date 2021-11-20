@@ -10,7 +10,7 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserModel {
+public class UserRecord {
 
     @CsvBindByName(column = "Name")
     private String name;

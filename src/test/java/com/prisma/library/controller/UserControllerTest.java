@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = {UserController.class})
@@ -38,18 +39,21 @@ class UserControllerTest {
     }
 
     @Test
-    void testGetAllUsersBorrowedBookFailure() throws Exception {
-        when(this.userService.getAllUsersBorrowedBook()).thenReturn(null);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/user/getBookBorrowedUsers");
+    void testGetAllUsersBorrowedBook2() throws Exception {
+        when(this.userService.getAllUsersBorrowedBook()).thenReturn(new ArrayList<>());
+        MockHttpServletRequestBuilder getResult = MockMvcRequestBuilders.get("/user/getBookBorrowedUsers");
+        getResult.contentType("Not all who wander are lost");
         MockMvcBuilders.standaloneSetup(this.userController)
                 .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .perform(getResult)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andExpect(MockMvcResultMatchers.content().string("[]"));
     }
 
     @Test
     void testGetAllUsersBorrowedBookOnGivenDate() throws Exception {
-        when(this.userService.getAllUsersBorrowedBookOnGivenDate("2020-03-01")).thenReturn(new ArrayList<>());
+        when(this.userService.getAllUsersBorrowedBookOnGivenDate(anyString())).thenReturn(new ArrayList<>());
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/user/getBookBorrowedUsers/{date}",
                 "2020-03-01");
         MockMvcBuilders.standaloneSetup(this.userController)
@@ -61,14 +65,17 @@ class UserControllerTest {
     }
 
     @Test
-    void testGetAllUsersBorrowedBookOnGivenDateFailure() throws Exception {
-        when(this.userService.getAllUsersBorrowedBookOnGivenDate("2020-03-01")).thenReturn(null);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/user/getBookBorrowedUsers/{date}",
-                "2020-03-01");
+    void testGetAllUsersBorrowedBookOnGivenDate2() throws Exception {
+        when(this.userService.getAllUsersBorrowedBook()).thenReturn(new ArrayList<>());
+        when(this.userService.getAllUsersBorrowedBookOnGivenDate(anyString())).thenReturn(new ArrayList<>());
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/user/getBookBorrowedUsers/{date}", "",
+                "Uri Vars");
         MockMvcBuilders.standaloneSetup(this.userController)
                 .build()
                 .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andExpect(MockMvcResultMatchers.content().string("[]"));
     }
 
     @Test
@@ -81,16 +88,6 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content().string("[]"));
-    }
-
-    @Test
-    void testGetActiveUsersNotBorrowedSingleBookFailure() throws Exception {
-        when(this.userService.getActiveUsersNotBorrowedSingleBook()).thenReturn(null);
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/user/getActiveNonBookBorrowedUsers");
-        MockMvcBuilders.standaloneSetup(this.userController)
-                .build()
-                .perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }
 

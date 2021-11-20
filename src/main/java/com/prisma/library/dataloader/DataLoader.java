@@ -1,4 +1,4 @@
-package com.prisma.library.dataLoader;
+package com.prisma.library.dataloader;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -6,8 +6,8 @@ import com.prisma.library.model.Book;
 import com.prisma.library.model.Borrow;
 import com.prisma.library.model.BorrowId;
 import com.prisma.library.model.User;
-import com.prisma.library.model.csvLoader.BorrowedModel;
-import com.prisma.library.model.csvLoader.UserModel;
+import com.prisma.library.model.csvLoader.BorrowedRecord;
+import com.prisma.library.model.csvLoader.UserRecord;
 import com.prisma.library.repository.BookRepository;
 import com.prisma.library.repository.BorrowRepository;
 import com.prisma.library.repository.UserRepository;
@@ -28,7 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.String.format;
+import static com.prisma.library.util.Constants.CSV_DATE_FORMAT;
+import static com.prisma.library.util.Util.isNull;
 
 @Component
 @Slf4j
@@ -66,30 +67,22 @@ public class DataLoader implements ApplicationRunner {
 
         try (Reader reader = new BufferedReader(new InputStreamReader(userResource.getInputStream()))) {
 
-            CsvToBean<UserModel> csvToBean = new CsvToBeanBuilder(reader)
-                    .withType(UserModel.class)
+            CsvToBean<UserRecord> csvToBean = new CsvToBeanBuilder<UserRecord>(reader)
+                    .withType(UserRecord.class)
                     .withIgnoreLeadingWhiteSpace(true)
                     .withIgnoreEmptyLine(true)
-                    .withFilter(strings -> {
-                                for (String one : strings) {
-                                    if (one != null && one.length() > 0) {
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            }
-                    )
+                    .withFilter(DataLoader::allowLine)
                     .build();
 
-            List<UserModel> users = csvToBean.parse();
+            List<UserRecord> users = csvToBean.parse();
 
-            users.stream().forEach(record -> {
-                Optional<User> dbRecord = convertUserCSVRecordToUserDBRecord(record);
+            users.forEach(user -> {
+                Optional<User> dbRecord = convertUserCSVRecordToUserDBRecord(user);
                 dbRecord.ifPresent(userRepository::save);
 
             });
         } catch (Exception ex) {
-            log.error(format("Loading User csv file failed with error:" + ex));
+            log.error("Loading User csv file failed with error:" + ex);
         }
     }
 
@@ -97,71 +90,53 @@ public class DataLoader implements ApplicationRunner {
 
         try (Reader reader = new BufferedReader(new InputStreamReader(bookResource.getInputStream()))) {
 
-            CsvToBean<Book> csvToBean = new CsvToBeanBuilder(reader)
+            CsvToBean<Book> csvToBean = new CsvToBeanBuilder<Book>(reader)
                     .withType(Book.class)
                     .withIgnoreLeadingWhiteSpace(true)
                     .withIgnoreEmptyLine(true)
-                    .withFilter(strings -> {
-                                for (String one : strings) {
-                                    if (one != null && one.length() > 0) {
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            }
-                    )
+                    .withFilter(DataLoader::allowLine)
                     .build();
 
             List<Book> books = csvToBean.parse();
-            books.stream().forEach(record -> {
-                bookRepository.save(record);
-            });
+            books.forEach(bookRepository::save);
 
         } catch (Exception ex) {
-            log.error(format("Loading Books csv file failed with error:" + ex));
+            log.error("Loading Books csv file failed with error:", ex);
         }
     }
 
     public void loadBorrowTable() {
         try (Reader reader = new BufferedReader(new InputStreamReader(borrowResource.getInputStream()))) {
 
-            CsvToBean<BorrowedModel> csvToBean = new CsvToBeanBuilder(reader)
-                    .withType(BorrowedModel.class)
+            CsvToBean<BorrowedRecord> csvToBean = new CsvToBeanBuilder<BorrowedRecord>(reader)
+                    .withType(BorrowedRecord.class)
                     .withIgnoreLeadingWhiteSpace(true)
                     .withIgnoreEmptyLine(true)
-                    .withFilter(strings -> {
-                                for (String one : strings) {
-                                    if (one != null && one.length() > 0) {
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            }
-                    )
+                    .withFilter(DataLoader::allowLine)
                     .build();
 
-            List<BorrowedModel> borrowedList = csvToBean.parse();
-            borrowedList.forEach(record -> {
-                Optional<Borrow> dbRecord = convertBorrowCSVRecordToBorrowDBRecord(record);
+            List<BorrowedRecord> borrowedList = csvToBean.parse();
+            borrowedList.forEach(borrowed -> {
+                Optional<Borrow> dbRecord = convertBorrowCSVRecordToBorrowDBRecord(borrowed);
                 dbRecord.ifPresent(borrowRepository::save);
             });
         } catch (Exception ex) {
-            log.error(format("Loading Borrow csv file failed with error:" + ex));
+            log.error("Loading Borrow csv file failed with error:", ex);
         }
     }
 
-    public Optional<User> convertUserCSVRecordToUserDBRecord(UserModel record) {
+    public Optional<User> convertUserCSVRecordToUserDBRecord(UserRecord userRecord) {
 
-        Date memberSince = convertStringToDate(record.getMemberSince());
-        Date memberTill = convertStringToDate(record.getMemberTill());
+        Date memberSince = convertStringToDate(userRecord.getMemberSince());
+        Date memberTill = convertStringToDate(userRecord.getMemberTill());
 
         User user = null;
 
         if (memberSince != null) {
             user = User.builder() //
                     // since in borrowed csv file name is represent as (name,firstname)
-                    .name(record.getName() + "," + record.getFirstName()) //
-                    .gender(record.getGender()) //
+                    .name(userRecord.getName() + "," + userRecord.getFirstName()) //
+                    .gender(userRecord.getGender()) //
                     .memberSince(memberSince) //
                     .memberTill(memberTill) //
                     .build();
@@ -173,24 +148,24 @@ public class DataLoader implements ApplicationRunner {
         Date date = null;
         if (dateString != null) {
             try {
-                date = new SimpleDateFormat("MM/dd/yyyy").parse(dateString);
+                date = new SimpleDateFormat(CSV_DATE_FORMAT).parse(dateString);
             } catch (ParseException e) {
-                log.trace(format("Exception occurred while parsing string to date for the String:" + dateString));
+                log.trace("Exception occurred while parsing string to date for the String:" + dateString);
             }
         }
         return date;
     }
 
-    public Optional<Borrow> convertBorrowCSVRecordToBorrowDBRecord(BorrowedModel record) {
+    public Optional<Borrow> convertBorrowCSVRecordToBorrowDBRecord(BorrowedRecord borrowed) {
 
-        Date borrowedTo = convertStringToDate(record.getBorrowedTo());
-        Date borrowedFrom = convertStringToDate(record.getBorrowedFrom());
+        Date borrowedTo = convertStringToDate(borrowed.getBorrowedTo());
+        Date borrowedFrom = convertStringToDate(borrowed.getBorrowedFrom());
         Borrow borrow = null;
 
-        if (borrowedTo != null && borrowedFrom != null) {
+        if (!isNull(borrowedTo) && !isNull(borrowedFrom)) {
             BorrowId borrowId = BorrowId.builder() //
-                    .borrower(record.getBorrower()) //
-                    .bookTitle(record.getBookTitle()) //
+                    .borrower(borrowed.getBorrower()) //
+                    .bookTitle(borrowed.getBookTitle()) //
                     .build(); //
 
             borrow = Borrow.builder() //
@@ -200,5 +175,14 @@ public class DataLoader implements ApplicationRunner {
                     .build(); //
         }
         return Optional.ofNullable(borrow);
+    }
+
+    private static boolean allowLine(String[] strings) {
+        for (String one : strings) {
+            if (one != null && one.length() > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }

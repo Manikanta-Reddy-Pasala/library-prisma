@@ -1,13 +1,13 @@
 package com.prisma.library.service.impl;
 
+import com.prisma.library.exception.NoResultsFoundException;
 import com.prisma.library.model.Book;
 import com.prisma.library.repository.BookRepository;
 import com.prisma.library.service.BookService;
+import com.prisma.library.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -20,24 +20,30 @@ class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> getAllBooksBorrowedByUserInGivenDateRange(String user, String fromDate, String toDate) {
-        return bookRepository.getAllBooksBorrowedByUserInGivenDateRange(user, fromDate, toDate);
+    public List<Book> getAllBooksBorrowedByUserInGivenDateRange(String userName, String fromDate, String toDate) {
+        List<Book> books = bookRepository.getAllBooksBorrowedByUserInGivenDateRange(userName, fromDate, toDate);
+
+        if(Util.isEmptyOrNull(books)) {
+            throw new NoResultsFoundException("No Results Found for the Given Date Range");
+        }
+        return books;
     }
 
     @Override
     public List<Book> getAllAvailableBooks() {
 
-        // Gets the current date
-        LocalDate date = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        List<Book> books = bookRepository.getAllAvailableBooks(date.format(formatter));
-
+        List<Book> books = bookRepository.getAllAvailableBooks(Util.getTodayDate());
         List<Book> notBorrowedOnce = bookRepository.getAllBooksNotBorrowedOnce();
 
-        books.addAll(notBorrowedOnce);
+        if(!Util.isEmptyOrNull(books)) {
+            books.addAll(notBorrowedOnce);
+        } else {
+            books = notBorrowedOnce;
+        }
 
+        if(Util.isEmptyOrNull(books)) {
+            throw new NoResultsFoundException("There are No Available books found");
+        }
         return books;
     }
-
 }
