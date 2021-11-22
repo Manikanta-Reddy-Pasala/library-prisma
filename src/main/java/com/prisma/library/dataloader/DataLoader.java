@@ -4,7 +4,6 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.prisma.library.model.Book;
 import com.prisma.library.model.Borrow;
-import com.prisma.library.model.BorrowId;
 import com.prisma.library.model.User;
 import com.prisma.library.model.csvLoader.BorrowedRecord;
 import com.prisma.library.model.csvLoader.UserRecord;
@@ -163,13 +162,10 @@ public class DataLoader implements ApplicationRunner {
         Borrow borrow = null;
 
         if (!isNull(borrowedTo) && !isNull(borrowedFrom)) {
-            BorrowId borrowId = BorrowId.builder() //
-                    .borrower(borrowed.getBorrower()) //
-                    .bookTitle(borrowed.getBookTitle()) //
-                    .build(); //
 
             borrow = Borrow.builder() //
-                    .borrowId(borrowId) //
+                    .borrower(borrowed.getBorrower()) //
+                    .bookTitle(borrowed.getBookTitle()) //
                     .borrowedTo(borrowedTo) //
                     .borrowedFrom(borrowedFrom)
                     .build(); //

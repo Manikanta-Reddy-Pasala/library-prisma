@@ -55,14 +55,14 @@ class BookServiceImplTest {
         ArrayList<Book> bookList = new ArrayList<>();
         bookList.add(book);
 
-        when(this.bookRepository.getAllBooksNotBorrowedOnce()).thenReturn(bookList);
-        when(this.bookRepository.getAllAvailableBooks(any())).thenReturn(bookList);
+//        when(this.bookRepository.getAllBooksNotBorrowedOnce()).thenReturn(bookList);
+        when(this.bookRepository.getAllAvailableBooksV3(any())).thenReturn(bookList);
 
         List<Book> actualAllAvailableBooks = this.bookServiceImpl.getAllAvailableBooks();
 
-        assertEquals(2, actualAllAvailableBooks.size());
-        verify(this.bookRepository).getAllAvailableBooks(any());
-        verify(this.bookRepository).getAllBooksNotBorrowedOnce();
+        assertEquals(1, actualAllAvailableBooks.size());
+        verify(this.bookRepository).getAllAvailableBooksV3(any());
+//        verify(this.bookRepository).getAllBooksNotBorrowedOnce();
     }
 }
 

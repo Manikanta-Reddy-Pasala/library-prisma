@@ -10,11 +10,11 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, String> {
 
     @Query(value = "SELECT u FROM User u " +
-            "WHERE u.name in (SELECT distinct br.borrowId.borrower FROM Borrow br)")
+            "WHERE u.name in (SELECT distinct br.borrower FROM Borrow br)")
     List<User> getAllUsersBorrowedBook();
 
     @Query(value = "SELECT u FROM User u " +
-            "WHERE u.memberTill IS NULL and u.name NOT IN (SELECT distinct br.borrowId.borrower FROM Borrow br)")
+            "WHERE u.memberTill IS NULL and u.name NOT IN (SELECT distinct br.borrower FROM Borrow br)")
     List<User> getActiveUsersNotBorrowedSingleBook();
 
     @Query(value = "SELECT * FROM user u " +

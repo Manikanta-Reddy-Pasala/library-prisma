@@ -2,7 +2,6 @@ package com.prisma.library.repository;
 
 import com.prisma.library.model.Book;
 import com.prisma.library.model.Borrow;
-import com.prisma.library.model.BorrowId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -40,11 +39,9 @@ class BookRepositoryTest {
         book1.setTitle("Book");
         book1.setAuthor("JaneDoe");
 
-        BorrowId id = new BorrowId();
-        id.setBorrower("Name");
-        id.setBookTitle("Book");
         Borrow borrow = new Borrow();
-        borrow.setBorrowId(id);
+        borrow.setBorrower("Name");
+        borrow.setBookTitle("Book");
         borrow.setBorrowedFrom(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
         borrow.setBorrowedTo(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
 
@@ -69,11 +66,9 @@ class BookRepositoryTest {
         book1.setTitle("Book");
         book1.setAuthor("JaneDoe");
 
-        BorrowId id = new BorrowId();
-        id.setBorrower("Name");
-        id.setBookTitle("Book");
         Borrow borrow = new Borrow();
-        borrow.setBorrowId(id);
+        borrow.setBorrower("Name");
+        borrow.setBookTitle("Book");
         borrow.setBorrowedFrom(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
         borrow.setBorrowedTo(new SimpleDateFormat("yyyy-MM-dd").parse("2023-01-01"));
 
@@ -98,11 +93,9 @@ class BookRepositoryTest {
         book1.setTitle("Book2");
         book1.setAuthor("JaneDoe");
 
-        BorrowId id = new BorrowId();
-        id.setBorrower("Name");
-        id.setBookTitle("Book");
         Borrow borrow = new Borrow();
-        borrow.setBorrowId(id);
+        borrow.setBorrower("Name");
+        borrow.setBookTitle("Book");
         borrow.setBorrowedFrom(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
         borrow.setBorrowedTo(new SimpleDateFormat("yyyy-MM-dd").parse("2023-01-01"));
 
@@ -121,11 +114,9 @@ class BookRepositoryTest {
         book.setTitle("Book1");
         book.setAuthor("JaneDoe");
 
-        BorrowId id = new BorrowId();
-        id.setBorrower("Name");
-        id.setBookTitle("Book1");
         Borrow borrow = new Borrow();
-        borrow.setBorrowId(id);
+        borrow.setBorrower("Name");
+        borrow.setBookTitle("Book1");
         borrow.setBorrowedFrom(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
         borrow.setBorrowedTo(new SimpleDateFormat("yyyy-MM-dd").parse("2023-01-01"));
 
@@ -149,11 +140,9 @@ class BookRepositoryTest {
         book1.setTitle("Book");
         book1.setAuthor("JaneDoe");
 
-        BorrowId id = new BorrowId();
-        id.setBorrower("Name");
-        id.setBookTitle("Book");
         Borrow borrow = new Borrow();
-        borrow.setBorrowId(id);
+        borrow.setBorrower("Name");
+        borrow.setBookTitle("Book");
 
         borrow.setBorrowedFrom(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
         borrow.setBorrowedTo(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));

@@ -32,14 +32,26 @@ class BookServiceImpl implements BookService {
     @Override
     public List<Book> getAllAvailableBooks() {
 
-        List<Book> books = bookRepository.getAllAvailableBooks(Util.getTodayDate());
-        List<Book> notBorrowedOnce = bookRepository.getAllBooksNotBorrowedOnce();
+        /*
+        implemented in 3 ways
+        1) getAllAvailableBooks
+        a) get all available books which are borrowed at least once
+        b) get all available books which are not borrowed at least once
 
-        if(!Util.isEmptyOrNull(books)) {
-            books.addAll(notBorrowedOnce);
-        } else {
-            books = notBorrowedOnce;
-        }
+        2) getAllAvailableBooksV2
+        Since full joins are not supported in H2 database written two queries separately
+
+        3) getAllAvailableBooksV3
+        used UNION in the place of full joins
+         */
+        List<Book> books = bookRepository.getAllAvailableBooksV3(Util.getTodayDate());
+//        List<Book> notBorrowedOnce = bookRepository.getAllBooksNotBorrowedOnce();
+
+//        if(!Util.isEmptyOrNull(books)) {
+//            books.addAll(notBorrowedOnce);
+//        } else {
+//            books = notBorrowedOnce;
+//        }
 
         if(Util.isEmptyOrNull(books)) {
             throw new NoResultsFoundException("There are No Available books found");

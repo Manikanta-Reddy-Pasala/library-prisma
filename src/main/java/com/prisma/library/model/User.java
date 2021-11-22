@@ -20,7 +20,7 @@ public class User implements Serializable {
     private static final long serialVersionUID = 3252591505029724236L;
 
     @Id
-    @ApiModelProperty(value = "User Name", required = true)
+    @ApiModelProperty(value = "User Name,First Name. Ex: Zhungwang,Ava", required = true)
     private String name;
     @Temporal(TemporalType.DATE)
     @ApiModelProperty(value = "Member From")

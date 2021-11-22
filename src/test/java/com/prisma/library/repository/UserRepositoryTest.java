@@ -1,7 +1,6 @@
 package com.prisma.library.repository;
 
 import com.prisma.library.model.Borrow;
-import com.prisma.library.model.BorrowId;
 import com.prisma.library.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +33,9 @@ class UserRepositoryTest {
         user.setName("Name");
         user.setMemberSince(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
 
-        BorrowId id = new BorrowId();
-        id.setBorrower("Name");
-        id.setBookTitle("Book");
         Borrow borrow = new Borrow();
-        borrow.setBorrowId(id);
+        borrow.setBorrower("Name");
+        borrow.setBookTitle("Book");
         borrow.setBorrowedFrom(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
 
         this.userRepository.save(user);
@@ -54,11 +51,9 @@ class UserRepositoryTest {
         user.setName("Name");
         user.setMemberSince(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
 
-        BorrowId id = new BorrowId();
-        id.setBorrower("name");
-        id.setBookTitle("Book");
         Borrow borrow = new Borrow();
-        borrow.setBorrowId(id);
+        borrow.setBorrower("Name1");
+        borrow.setBookTitle("Book");
         borrow.setBorrowedFrom(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
 
         this.userRepository.save(user);
@@ -97,11 +92,9 @@ class UserRepositoryTest {
         user.setName("Name");
         user.setMemberSince(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
 
-        BorrowId id = new BorrowId();
-        id.setBorrower("Name");
-        id.setBookTitle("Book");
         Borrow borrow = new Borrow();
-        borrow.setBorrowId(id);
+        borrow.setBorrower("Name");
+        borrow.setBookTitle("Book");
         borrow.setBorrowedFrom(new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01"));
 
         this.userRepository.save(user);

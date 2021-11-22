@@ -16,18 +16,21 @@ import java.util.Date;
 public class Borrow implements Serializable {
     private static final long serialVersionUID = 325259150509024236L;
 
-    @EmbeddedId
-    private BorrowId borrowId;
+    @Id
+    @GeneratedValue
+    private int id;
+    private String borrower;
+    private String bookTitle;
     @Temporal(TemporalType.DATE)
     private Date borrowedFrom;
     @Temporal(TemporalType.DATE)
     private Date borrowedTo;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "title", insertable = false)
     private Book book;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "name", insertable = false)
     private User user;
 }
