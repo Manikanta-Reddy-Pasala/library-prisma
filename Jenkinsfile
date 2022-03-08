@@ -1,5 +1,5 @@
 pipeline {
-    agent { node { label 'docker-agent' } }
+    agent any
     options {
         disableConcurrentBuilds()
         buildDiscarder(logRotator(numToKeepStr: '10'))
