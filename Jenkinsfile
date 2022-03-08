@@ -5,11 +5,10 @@ pipeline {
     timeout time: 1, unit: 'HOURS'
   }
 
-    def mvnHome = tool 'mvn'
     stages {
         stage ('Build Application') {
             steps {
-                sh "'${mvnHome}/bin/mvn' clean install"
+                sh 'mvn clean install'
             }
             post {
                 success {
