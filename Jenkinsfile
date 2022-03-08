@@ -1,4 +1,9 @@
-node {
+pipeline {
+  agent none
+
+  options {
+    timeout time: 1, unit: 'HOURS'
+  }
 
     def mvnHome = tool 'mvn'
     stages {
