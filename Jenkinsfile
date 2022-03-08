@@ -1,6 +1,6 @@
 node {
 
-    def mvnHome = tool 'maven-3.8.4'
+    def mvnHome = tool 'mvn'
     stages {
         stage ('Build Application') {
             steps {
