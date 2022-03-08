@@ -9,9 +9,9 @@ pipeline {
     stages {
         stage ('Build Application') {
             steps {
-                sh 'echo $JAVA_HOME'
                 sh 'java -version'
-                sh 'mvn clean package'
+                sh 'ls -ltr'
+                sh './mvnw clean package'
             }
             post {
                 success {
