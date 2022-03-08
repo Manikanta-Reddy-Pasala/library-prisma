@@ -1,10 +1,10 @@
-pipeline {
-    agent any
+node {
 
+    def mvnHome = tool 'maven-3.8.4'
     stages {
         stage ('Build Application') {
             steps {
-                sh 'mvn clean install'
+                sh "'${mvnHome}/bin/mvn' clean install"
             }
             post {
                 success {
